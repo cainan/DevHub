@@ -75,7 +75,7 @@ fun HomePage() {
                 ).data("https://avatars.githubusercontent.com/u/977227?v=4").crossfade(true)
                     .build(),
                 contentDescription = "",
-                placeholder = painterResource(android.R.drawable.presence_invisible),
+                placeholder = painterResource(R.drawable.user_placeholder),
                 modifier = Modifier
                     .offset(y = imageHeight / 2)
                     .size(imageHeight)
