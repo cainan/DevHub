@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.cso.devhub.ui.theme.DevHubTheme
-import com.cso.devhub.webclient.RetrofitClient.gitHubService
+import com.cso.devhub.webclient.RetrofitInit
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -50,10 +50,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         GlobalScope.launch {
-            val response = gitHubService.getProfileStatic()
+            val response = RetrofitInit().gitHubService.getProfileStatic()
             Log.d(TAG, response.body().toString())
 
-            val response2 = gitHubService.findProfileBy("cainan")
+            val response2 = RetrofitInit().gitHubService.findProfileBy("cainan")
             Log.d(TAG, response2.toString())
         }
 

@@ -62,8 +62,7 @@ dependencies {
     implementation(libs.coil.compose)
     // retrofit
     implementation(libs.retrofit)
-    // GSON
-    implementation(libs.converter.gson)
+    implementation(libs.squareup.converter.moshi)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
