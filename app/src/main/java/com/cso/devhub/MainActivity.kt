@@ -1,6 +1,7 @@
 package com.cso.devhub
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -33,10 +34,29 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.cso.devhub.ui.theme.DevHubTheme
+import com.cso.devhub.webclient.RetrofitClient.gitHubService
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        GlobalScope.launch {
+            val response = gitHubService.getProfileStatic()
+            Log.d(TAG, response.body().toString())
+
+            val response2 = gitHubService.findProfileBy("cainan")
+            Log.d(TAG, response2.toString())
+        }
+
         setContent {
             DevHubTheme {
                 // A surface container using the 'background' color from the theme
@@ -49,6 +69,8 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
 }
 
 @Composable
