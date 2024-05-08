@@ -1,7 +1,6 @@
 package com.cso.devhub
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -20,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,10 +35,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.cso.devhub.ui.theme.DevHubTheme
-import com.cso.devhub.webclient.RetrofitInit
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.cso.devhub.webclient.GitHubWebClient
 
 class MainActivity : ComponentActivity() {
 
@@ -45,17 +43,8 @@ class MainActivity : ComponentActivity() {
         private const val TAG = "MainActivity"
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        GlobalScope.launch {
-            val response = RetrofitInit().gitHubService.getProfileStatic()
-            Log.d(TAG, response.body().toString())
-
-            val response2 = RetrofitInit().gitHubService.findProfileBy("cainan")
-            Log.d(TAG, response2.toString())
-        }
 
         setContent {
             DevHubTheme {
@@ -64,7 +53,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomePage()
+                    HomePage(user = "cainan")
                 }
             }
         }
@@ -74,61 +63,67 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun HomePage() {
-    Column {
-        val boxHeight = remember {
-            150.dp
-        }
-        val imageHeight = remember {
-            boxHeight
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Color.Gray,
-                    shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-                )
-                .height(boxHeight)
-        ) {
-            AsyncImage(
-                model = ImageRequest.Builder(
-                    LocalContext.current
-                ).data("https://avatars.githubusercontent.com/u/977227?v=4").crossfade(true)
-                    .build(),
-                contentDescription = "",
-                placeholder = painterResource(R.drawable.user_placeholder),
+fun HomePage(user: String, webClient: GitHubWebClient = GitHubWebClient()) {
+
+    val foundUser by webClient.profileInfo(user)
+        .collectAsState(initial = null)
+    foundUser?.let {
+
+        Column {
+            val boxHeight = remember {
+                150.dp
+            }
+            val imageHeight = remember {
+                boxHeight
+            }
+            Box(
                 modifier = Modifier
-                    .offset(y = imageHeight / 2)
-                    .size(imageHeight)
-                    .align(Alignment.BottomCenter)
-                    .clip(CircleShape)
-            )
-        }
+                    .fillMaxWidth()
+                    .background(
+                        Color.Gray,
+                        shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+                    )
+                    .height(boxHeight)
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(
+                        LocalContext.current
+                    ).data(it.avatar).crossfade(true)
+                        .build(),
+                    contentDescription = "",
+                    placeholder = painterResource(R.drawable.user_placeholder),
+                    modifier = Modifier
+                        .offset(y = imageHeight / 2)
+                        .size(imageHeight)
+                        .align(Alignment.BottomCenter)
+                        .clip(CircleShape)
+                )
+            }
 
-        Spacer(modifier = Modifier.height(imageHeight / 2))
+            Spacer(modifier = Modifier.height(imageHeight / 2))
 
-        Column(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(1f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Cainã Oliveira",
-                fontSize = 32.sp,
-            )
-            Text(
-                text = "cainan",
-                fontSize = 18.sp,
-            )
-            Text(
-                text = "Software Developer at @",
+            Column(
                 modifier = Modifier
                     .padding(8.dp)
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center,
-            )
+                    .fillMaxWidth(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = it.name,
+                    fontSize = 32.sp,
+                )
+                Text(
+                    text = it.login,
+                    fontSize = 18.sp,
+                )
+                Text(
+                    text = it.bio ?: "",
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }
@@ -138,6 +133,6 @@ fun HomePage() {
 @Composable
 fun GreetingPreview() {
     DevHubTheme {
-        HomePage()
+        HomePage(user = "cainan")
     }
 }

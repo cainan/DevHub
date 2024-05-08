@@ -7,7 +7,7 @@ data class GitHubProfileWeb(
     @field:Json(name = "avatar_url")
     val avatar: String,
     val name: String,
-    val bio: String,
+    val bio: String?,
 )
 
 /*
