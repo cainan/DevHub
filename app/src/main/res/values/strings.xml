@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">DevHub</string>
+    <string name="repository">Repositories</string>
 </resources>

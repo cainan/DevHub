@@ -1,4 +1,4 @@
-package com.cso.devhub.webclient
+package com.cso.devhub.webclient.model
 
 import com.cso.devhub.ui.screen.ProfileUiState
 import com.squareup.moshi.Json
