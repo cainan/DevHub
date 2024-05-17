@@ -5,14 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.cso.devhub.ui.screen.AuthenticationScreen
 import com.cso.devhub.ui.screen.ProfileScreen
 import com.cso.devhub.ui.theme.DevHubTheme
 
@@ -34,28 +35,38 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Column {
-                        SearchBar(
-                            query = "Search for an user",
-                            onQueryChange = {},
-                            onSearch = {},
-                            active = false,
-                            onActiveChange = {},
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = null
-                                )
+
+                        var screenState: AppScreens by remember {
+                            mutableStateOf(AppScreens.Authentication)
+                        }
+                        var user by remember {
+                            mutableStateOf("")
+                        }
+
+                        when (screenState) {
+                            AppScreens.Authentication -> {
+                                AuthenticationScreen(onEnterClick = {
+                                    user = it
+                                    screenState = AppScreens.Profile
+                                })
                             }
-                        ) {
+
+                            AppScreens.Profile -> {
+                                ProfileScreen(user = user)
+                            }
 
                         }
-                        ProfileScreen(user = "cainan")
-                    }
 
+                    }
                 }
             }
         }
-    }
 
+    }
 }
 
+sealed class AppScreens {
+    data object Authentication : AppScreens()
+    data object Profile : AppScreens()
+
+}
